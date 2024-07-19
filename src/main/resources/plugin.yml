@@ -1,0 +1,27 @@
+name: AsteroSupport
+version: '${project.version}'
+main: nl.infinityastro.astrosupport.AsteroSupport
+api-version: '1.20'
+commands:
+  ask:
+    description: Submit an ask request
+    usage: /ask <question>
+  report:
+    description: Submit a report
+    usage: /report <player> <reason>
+  reports:
+    description: View and manage reports
+    usage: /reports <list/view/react>
+  support:
+    description: Staff support commands
+    usage: /support <subcommand>
+permissions:
+  astrosupport.use:
+    description: Allows the use of /ask and /report
+    default: true
+  astrosupport.staff:
+    description: Allows staff to manage asks and reports
+    default: op
+  astrosupport.staff.global:
+    description: Allows staff to handle global asks and reports
+    default: op

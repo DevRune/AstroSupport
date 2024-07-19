@@ -1,0 +1,25 @@
+database:
+  host: "localhost"
+  port: "3306"
+  database: "yourdatabase"
+  username: "root"
+  password: "password"
+
+server:
+  name: "survival"
+  menu:
+    items:
+      1: "Survival"
+      2: "Creative"
+      3: "Unlimited"
+
+
+messages:
+  ask_submitted: "&aYour ask has been submitted."
+  report_submitted: "&aYour report has been submitted."
+  claim_success: "&aSuccessfully claimed the %type%."
+  claim_failed: "&cFailed to claim the %type% or it has already been claimed."
+  close_success: "&aSuccessfully closed the %type%."
+  close_failed: "&cFailed to close the %type% or it has not been claimed."
+  react_success: "&aMessage sent to the player."
+  react_failed: "&cFailed to send message."
