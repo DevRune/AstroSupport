@@ -16,11 +16,6 @@ public class SupportCommand implements CommandExecutor {
             return true;
         }
 
-        if (args.length < 1) {
-            sender.sendMessage(MessageUtils.colorize("&cUsage: /support"));
-            return true;
-        }
-
         Player player = (Player) sender;
         MenuUtils.openTypeMenu(player);
         return true;

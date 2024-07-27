@@ -9,9 +9,6 @@ commands:
   report:
     description: Submit a report
     usage: /report <player> <reason>
-  reports:
-    description: View and manage reports
-    usage: /reports <list/view/react>
   support:
     description: Staff support commands
     usage: /support <subcommand>

@@ -1,7 +1,7 @@
 package nl.infinityastro.astrosupport.utils;
 
-import nl.infinityastro.astrosupport.database.DatabaseManager;
 import nl.infinityastro.astrosupport.database.Ask;
+import nl.infinityastro.astrosupport.database.DatabaseManager;
 import nl.infinityastro.astrosupport.database.Report;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -33,18 +33,48 @@ public class MenuUtils {
     public static void openTypeMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 27, MessageUtils.colorize("&6Type Menu"));
 
-        for (int i = 0; i < serverNames.size(); i++) {
+        String[] types = {"Ask", "Report"};
+
+        for (int i = 0; i < types.length; i++) {
             ItemStack item = new ItemStack(Material.PAPER);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName(MessageUtils.colorize("&6" + serverNames.get(i)));
-            item.setItemMeta(meta);
-            inv.setItem(i, item);
+            if (meta != null) {
+                meta.setDisplayName(MessageUtils.colorize("&6" + types[i]));
+                item.setItemMeta(meta);
+                inv.setItem(i, item);
+            }
         }
 
         ItemStack backButton = new ItemStack(Material.BARRIER);
         ItemMeta backMeta = backButton.getItemMeta();
-        backMeta.setDisplayName(MessageUtils.colorize("&cBack"));
-        backButton.setItemMeta(backMeta);
+        if (backMeta != null) {
+            backMeta.setDisplayName(MessageUtils.colorize("&cBack"));
+            backButton.setItemMeta(backMeta);
+        }
+        inv.setItem(26, backButton);
+
+        player.openInventory(inv);
+    }
+
+    public static void openServerMenu(Player player, String type) {
+        Inventory inv = Bukkit.createInventory(null, 27, MessageUtils.colorize("&6Server Menu"));
+
+        for (int i = 0; i < serverNames.size(); i++) {
+            ItemStack item = new ItemStack(Material.PAPER);
+            ItemMeta meta = item.getItemMeta();
+            if (meta != null) {
+                meta.setDisplayName(MessageUtils.colorize("&6" + serverNames.get(i)));
+                item.setItemMeta(meta);
+                inv.setItem(i, item);
+            }
+        }
+
+        ItemStack backButton = new ItemStack(Material.BARRIER);
+        ItemMeta backMeta = backButton.getItemMeta();
+        if (backMeta != null) {
+            backMeta.setDisplayName(MessageUtils.colorize("&cBack"));
+            backButton.setItemMeta(backMeta);
+        }
         inv.setItem(26, backButton);
 
         player.openInventory(inv);
@@ -60,12 +90,14 @@ public class MenuUtils {
             ResultSet rs = stmt.executeQuery();
 
             int index = 0;
-            while (rs.next()) {
+            while (rs.next() && index < 54) {
                 ItemStack item = new ItemStack(Material.PAPER);
                 ItemMeta meta = item.getItemMeta();
-                meta.setDisplayName(MessageUtils.colorize("&6" + type.substring(0, 1).toUpperCase() + type.substring(1) + " ID " + rs.getInt("id")));
-                item.setItemMeta(meta);
-                inv.setItem(index++, item);
+                if (meta != null) {
+                    meta.setDisplayName(MessageUtils.colorize("&6" + type.substring(0, 1).toUpperCase() + type.substring(1) + " ID " + rs.getInt("id")));
+                    item.setItemMeta(meta);
+                    inv.setItem(index++, item);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -73,8 +105,10 @@ public class MenuUtils {
 
         ItemStack backButton = new ItemStack(Material.BARRIER);
         ItemMeta backMeta = backButton.getItemMeta();
-        backMeta.setDisplayName(MessageUtils.colorize("&cBack"));
-        backButton.setItemMeta(backMeta);
+        if (backMeta != null) {
+            backMeta.setDisplayName(MessageUtils.colorize("&cBack"));
+            backButton.setItemMeta(backMeta);
+        }
         inv.setItem(53, backButton);
 
         player.openInventory(inv);
@@ -92,17 +126,21 @@ public class MenuUtils {
             if (rs.next()) {
                 ItemStack detailsItem = new ItemStack(Material.PAPER);
                 ItemMeta detailsMeta = detailsItem.getItemMeta();
-                detailsMeta.setDisplayName(MessageUtils.colorize("&aDetails for " + type + " ID " + id));
-                detailsItem.setItemMeta(detailsMeta);
-                inv.addItem(detailsItem);
+                if (detailsMeta != null) {
+                    detailsMeta.setDisplayName(MessageUtils.colorize("&aDetails for " + type + " ID " + id));
+                    detailsItem.setItemMeta(detailsMeta);
+                    inv.addItem(detailsItem);
+                }
 
                 String description = rs.getString("description");
                 ItemStack descriptionItem = new ItemStack(Material.WRITTEN_BOOK);
                 ItemMeta descriptionMeta = descriptionItem.getItemMeta();
-                descriptionMeta.setDisplayName(MessageUtils.colorize("&eDescription"));
-                descriptionMeta.setLore(Collections.singletonList(MessageUtils.colorize("&7" + description)));
-                descriptionItem.setItemMeta(descriptionMeta);
-                inv.addItem(descriptionItem);
+                if (descriptionMeta != null) {
+                    descriptionMeta.setDisplayName(MessageUtils.colorize("&eDescription"));
+                    descriptionMeta.setLore(Collections.singletonList(MessageUtils.colorize("&7" + description)));
+                    descriptionItem.setItemMeta(descriptionMeta);
+                    inv.addItem(descriptionItem);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -110,20 +148,26 @@ public class MenuUtils {
 
         ItemStack claimButton = new ItemStack(Material.GREEN_CONCRETE);
         ItemMeta claimMeta = claimButton.getItemMeta();
-        claimMeta.setDisplayName(MessageUtils.colorize("&aClaim"));
-        claimButton.setItemMeta(claimMeta);
+        if (claimMeta != null) {
+            claimMeta.setDisplayName(MessageUtils.colorize("&aClaim"));
+            claimButton.setItemMeta(claimMeta);
+        }
         inv.addItem(claimButton);
 
         ItemStack closeButton = new ItemStack(Material.RED_CONCRETE);
         ItemMeta closeMeta = closeButton.getItemMeta();
-        closeMeta.setDisplayName(MessageUtils.colorize("&cClose"));
-        closeButton.setItemMeta(closeMeta);
+        if (closeMeta != null) {
+            closeMeta.setDisplayName(MessageUtils.colorize("&cClose"));
+            closeButton.setItemMeta(closeMeta);
+        }
         inv.addItem(closeButton);
 
         ItemStack backButton = new ItemStack(Material.BARRIER);
         ItemMeta backMeta = backButton.getItemMeta();
-        backMeta.setDisplayName(MessageUtils.colorize("&cBack"));
-        backButton.setItemMeta(backMeta);
+        if (backMeta != null) {
+            backMeta.setDisplayName(MessageUtils.colorize("&cBack"));
+            backButton.setItemMeta(backMeta);
+        }
         inv.setItem(8, backButton);
 
         player.openInventory(inv);
@@ -148,12 +192,10 @@ public class MenuUtils {
     public static void closeItem(Player player, String type, int id) {
         if (type.equalsIgnoreCase("ask")) {
             Ask.closeAsk(id);
+            player.sendMessage("§aSuccesfully closed this question.");
         } else if (type.equalsIgnoreCase("report")) {
             Report.closeReport(id);
+            player.sendMessage("§aSuccesfully closed this report.");
         }
-    }
-
-    public static void openReportsMenu(Player player) {
-        openItemMenu(player, "report", "survival"); // Example server, modify as needed
     }
 }

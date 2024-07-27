@@ -1,5 +1,7 @@
 package nl.infinityastro.astrosupport.database;
 
+import nl.infinityastro.astrosupport.AsteroSupport;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -12,7 +14,7 @@ public class Ask {
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, playerName);
             stmt.setString(2, question);
-            stmt.setString(3, "survival"); // Modify as needed
+            stmt.setString(3, AsteroSupport.getPlugin(AsteroSupport.class).getConfig().getString("server.name")); // Modify as needed
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

@@ -10,62 +10,100 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 public class MenuClickListener implements Listener {
+
+    HashMap<UUID, String> playerTypeMap = new HashMap<>();
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getInventory().getType() == InventoryType.CHEST) {
-            String title = MessageUtils.colorize("&6" + event.getView().getTitle().split(" ")[0]);
-            event.setCancelled(true);
+            event.setCancelled(true); // Prevent item moving
+
             ItemStack clickedItem = event.getCurrentItem();
-
-            if (clickedItem != null && clickedItem.hasItemMeta()) {
-                ItemMeta meta = clickedItem.getItemMeta();
-                String itemName = meta.getDisplayName();
-
-                if (title.equalsIgnoreCase(MessageUtils.colorize("&6Server Menu"))) {
-                    if (itemName.equalsIgnoreCase(MessageUtils.colorize("&cBack"))) {
-                        // Handle back button (return to previous menu or close menu)
-                        return;
-                    }
-
-                    // Open Ask or Report menu for the selected server
-                    MenuUtils.openTypeMenu((Player) event.getWhoClicked());
-                } else if (title.equalsIgnoreCase(MessageUtils.colorize("&6Ask Menu")) ||
-                        title.equalsIgnoreCase(MessageUtils.colorize("&6Report Menu"))) {
-                    try {
-                        int id = Integer.parseInt(itemName.split(" ")[2]);
-
-                        if (itemName.contains(MessageUtils.colorize("&aClaim"))) {
-                            MenuUtils.claimItem((Player) event.getWhoClicked(), title.equalsIgnoreCase(MessageUtils.colorize("&6Ask Menu")) ? "ask" : "report", id);
-                        } else if (itemName.contains(MessageUtils.colorize("&cClose"))) {
-                            MenuUtils.closeItem((Player) event.getWhoClicked(), title.equalsIgnoreCase(MessageUtils.colorize("&6Ask Menu")) ? "ask" : "report", id);
-                        } else if (itemName.contains(MessageUtils.colorize("&cBack"))) {
-                            MenuUtils.openTypeMenu((Player) event.getWhoClicked());
-                        } else {
-                            MenuUtils.openItemDetails((Player) event.getWhoClicked(), title.equalsIgnoreCase(MessageUtils.colorize("&6Ask Menu")) ? "ask" : "report", id);
-                        }
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
-                    }
-                } else if (title.equalsIgnoreCase(MessageUtils.colorize("&6Ask Details")) ||
-                        title.equalsIgnoreCase(MessageUtils.colorize("&6Report Details"))) {
-                    try {
-                        int id = Integer.parseInt(itemName.split(" ")[2]);
-
-                        if (itemName.contains(MessageUtils.colorize("&aClaim"))) {
-                            MenuUtils.claimItem((Player) event.getWhoClicked(), title.equalsIgnoreCase(MessageUtils.colorize("&6Ask Details")) ? "ask" : "report", id);
-                        } else if (itemName.contains(MessageUtils.colorize("&cClose"))) {
-                            MenuUtils.closeItem((Player) event.getWhoClicked(), title.equalsIgnoreCase(MessageUtils.colorize("&6Ask Details")) ? "ask" : "report", id);
-                        } else if (itemName.contains(MessageUtils.colorize("&cBack"))) {
-                            String server = event.getView().getTitle().split(" ")[1].toLowerCase();
-                            MenuUtils.openItemMenu((Player) event.getWhoClicked(), title.equalsIgnoreCase(MessageUtils.colorize("&6Ask Details")) ? "ask" : "report", server);
-                        }
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
-                    }
-                }
+            if (clickedItem == null || !clickedItem.hasItemMeta()) {
+                return; // Ignore if no item meta
             }
+
+            ItemMeta meta = clickedItem.getItemMeta();
+            String itemName = meta.getDisplayName();
+            Player player = (Player) event.getWhoClicked();
+
+            String plainTitle = MessageUtils.removeColorCodes(event.getView().getTitle());
+            String plainItemName = MessageUtils.removeColorCodes(itemName);
+
+            switch (plainTitle) {
+                case "Type Menu":
+                    handleTypeMenu(player, plainItemName);
+                    break;
+                case "Server Menu":
+                    handleServerMenu(player, plainItemName);
+                    break;
+                case "Ask Menu":
+                case "Report Menu":
+                    handleAskReportMenu(player, plainTitle, plainItemName);
+                    break;
+                case "Ask Details":
+                case "Report Details":
+                    handleAskReportDetailsMenu(player, plainTitle, plainItemName);
+                    break;
+                default:
+                    System.out.println("Unhandled menu title: " + plainTitle);
+            }
+        }
+    }
+
+    private void handleTypeMenu(Player player, String itemName) {
+        if (itemName.equalsIgnoreCase("Back")) {
+            MenuUtils.openTypeMenu(player);
+        } else {
+            playerTypeMap.put(player.getUniqueId(), itemName.toLowerCase());
+            MenuUtils.openServerMenu(player, itemName.toLowerCase());
+        }
+    }
+
+    private void handleServerMenu(Player player, String itemName) {
+        if (itemName.equalsIgnoreCase("Back")) {
+            MenuUtils.openTypeMenu(player);
+        } else {
+            String type = playerTypeMap.get(player.getUniqueId());
+            MenuUtils.openItemMenu(player, type, itemName);
+        }
+    }
+
+    private void handleAskReportMenu(Player player, String title, String itemName) {
+        try {
+            int id = Integer.parseInt(itemName.split(" ")[2]);
+            if (itemName.contains("Claim")) {
+                MenuUtils.claimItem(player, title.equalsIgnoreCase("Ask Menu") ? "ask" : "report", id);
+            } else if (itemName.contains("Close")) {
+                MenuUtils.closeItem(player, title.equalsIgnoreCase("Ask Menu") ? "ask" : "report", id);
+            } else if (itemName.contains("Back")) {
+                String type = playerTypeMap.get(player.getUniqueId());
+                MenuUtils.openServerMenu(player, type);
+            } else {
+                MenuUtils.openItemDetails(player, title.equalsIgnoreCase("Ask Menu") ? "ask" : "report", id);
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void handleAskReportDetailsMenu(Player player, String title, String itemName) {
+        try {
+            int id = Integer.parseInt(itemName.split(" ")[2]);
+            if (itemName.contains("Claim")) {
+                MenuUtils.claimItem(player, title.equalsIgnoreCase("Ask Details") ? "ask" : "report", id);
+            } else if (itemName.contains("Close")) {
+                MenuUtils.closeItem(player, title.equalsIgnoreCase("Ask Details") ? "ask" : "report", id);
+            } else if (itemName.contains("Back")) {
+                String previousMenu = title.equalsIgnoreCase("Ask Details") ? "Ask Menu" : "Report Menu";
+                MenuUtils.openItemMenu(player, previousMenu.equals("Ask Menu") ? "ask" : "report", "server"); // Adjust server parameter as needed
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
         }
     }
 }
