@@ -34,23 +34,21 @@ public class MenuClickListener implements Listener {
             String plainTitle = MessageUtils.removeColorCodes(event.getView().getTitle());
             String plainItemName = MessageUtils.removeColorCodes(itemName);
 
-            switch (plainTitle) {
-                case "Type Menu":
+            switch (plainTitle.toLowerCase()) {
+                case "type menu":
                     handleTypeMenu(player, plainItemName);
                     break;
-                case "Server Menu":
+                case "server menu":
                     handleServerMenu(player, plainItemName);
                     break;
-                case "Ask Menu":
-                case "Report Menu":
+                case "ask menu":
+                case "report menu":
                     handleAskReportMenu(player, plainTitle, plainItemName);
                     break;
-                case "Ask Details":
-                case "Report Details":
+                case "ask details":
+                case "report details":
                     handleAskReportDetailsMenu(player, plainTitle, plainItemName);
                     break;
-                default:
-                    System.out.println("Unhandled menu title: " + plainTitle);
             }
         }
     }
