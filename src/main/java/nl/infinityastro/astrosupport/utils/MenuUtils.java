@@ -84,7 +84,7 @@ public class MenuUtils {
         Inventory inv = Bukkit.createInventory(null, 54, MessageUtils.colorize("&6" + type + " Menu"));
 
         try (Connection conn = databaseManager.getConnection()) {
-            String query = "SELECT * FROM " + type + " WHERE server = ? AND status = 'open'";
+            String query = "SELECT * FROM " + getDatabaseFromType(type) + " WHERE server = ? AND status = 'open'";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, server);
             ResultSet rs = stmt.executeQuery();
@@ -114,11 +114,15 @@ public class MenuUtils {
         player.openInventory(inv);
     }
 
+    private static String getDatabaseFromType(String type) {
+        return type.toLowerCase() + "s";
+    }
+
     public static void openItemDetails(Player player, String type, int id) {
         Inventory inv = Bukkit.createInventory(null, 9, MessageUtils.colorize("&6" + type + " Details"));
 
         try (Connection conn = databaseManager.getConnection()) {
-            String query = "SELECT * FROM " + type + " WHERE id = ?";
+            String query = "SELECT * FROM " + getDatabaseFromType(type) + " WHERE id = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();

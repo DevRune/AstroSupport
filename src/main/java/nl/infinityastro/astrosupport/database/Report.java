@@ -8,8 +8,10 @@ import java.sql.SQLException;
 
 public class Report {
 
+    static AsteroSupport plugin = AsteroSupport.getPlugin(AsteroSupport.class);
+
     public static void submitReport(String reporter, String targetPlayer, String reason) {
-        try (Connection conn = DatabaseManager.getConnection()) {
+        try (Connection conn = plugin.getDatabaseManager().getConnection()) {
             String query = "INSERT INTO reports (reporter, target_player, reason, status, server) VALUES (?, ?, ?, 'open', ?)";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, reporter);
@@ -23,7 +25,7 @@ public class Report {
     }
 
     public static void claimReport(int id, String staffName) {
-        try (Connection conn = DatabaseManager.getConnection()) {
+        try (Connection conn = plugin.getDatabaseManager().getConnection()) {
             String query = "UPDATE reports SET claimed_by = ?, status = 'claimed' WHERE id = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, staffName);
@@ -35,7 +37,7 @@ public class Report {
     }
 
     public static void closeReport(int id) {
-        try (Connection conn = DatabaseManager.getConnection()) {
+        try (Connection conn = plugin.getDatabaseManager().getConnection()) {
             String query = "UPDATE reports SET status = 'closed' WHERE id = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setInt(1, id);

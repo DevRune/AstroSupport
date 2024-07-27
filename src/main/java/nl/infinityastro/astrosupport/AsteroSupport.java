@@ -21,12 +21,13 @@ public class AsteroSupport extends JavaPlugin {
     @Override
     public void onEnable() {
         // Load configuration and set up the database connection
+        databaseManager = new DatabaseManager();
         saveDefaultConfig();
         String url = getConfig().getString("database.url");
-        String user = getConfig().getString("database.user");
+        String user = getConfig().getString("database.username");
         String password = getConfig().getString("database.password");
         String type = getConfig().getString("database.type");
-        DatabaseManager.configureDatabase(url, user, password, type);
+        databaseManager.configureDatabase(url, user, password, type);
         initializeDatabase();
 
         // Set database manager for utility classes
@@ -43,8 +44,8 @@ public class AsteroSupport extends JavaPlugin {
         getCommand("support").setExecutor(new SupportCommand());
     }
 
-    public static void initializeDatabase() {
-        String createAskTable = "CREATE TABLE IF NOT EXISTS Ask (" +
+    public void initializeDatabase() {
+        String createAskTable = "CREATE TABLE IF NOT EXISTS asks (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY, " +
                 "server VARCHAR(255), " +
                 "description TEXT, " +
@@ -53,7 +54,7 @@ public class AsteroSupport extends JavaPlugin {
                 "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
                 ");";
 
-        String createReportTable = "CREATE TABLE IF NOT EXISTS Report (" +
+        String createReportTable = "CREATE TABLE IF NOT EXISTS reports (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY, " +
                 "server VARCHAR(255), " +
                 "description TEXT, " +
@@ -62,7 +63,7 @@ public class AsteroSupport extends JavaPlugin {
                 "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
                 ");";
 
-        try (Connection conn = DatabaseManager.getConnection();
+        try (Connection conn = databaseManager.getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute(createAskTable);
             stmt.execute(createReportTable);
@@ -74,5 +75,9 @@ public class AsteroSupport extends JavaPlugin {
     @Override
     public void onDisable() {
         // Clean up resources if needed
+    }
+
+    public DatabaseManager getDatabaseManager() {
+        return databaseManager;
     }
 }

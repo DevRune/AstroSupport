@@ -5,23 +5,23 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseManager {
-    private static String url;
-    private static String user;
-    private static String password;
-    private static String dbType;
-    private static Connection connection;
+    private String url;
+    private String user;
+    private String password;
+    private String dbType;
+    private Connection connection;
 
     // Initialize database configuration
-    public static void configureDatabase(String url, String user, String password, String dbType) {
-        DatabaseManager.url = url;
-        DatabaseManager.user = user;
-        DatabaseManager.password = password;
-        DatabaseManager.dbType = dbType.toLowerCase();
+    public void configureDatabase(String url, String user, String password, String dbType) {
+        this.url = url;
+        this.user = user;
+        this.password = password;
+        this.dbType = dbType.toLowerCase();
         loadDriver();
     }
 
     // Load the appropriate JDBC driver based on the database type
-    private static void loadDriver() {
+    private void loadDriver() {
         try {
             if ("mysql".equals(dbType)) {
                 Class.forName("com.mysql.cj.jdbc.Driver");
@@ -37,7 +37,7 @@ public class DatabaseManager {
     }
 
     // Get the database connection
-    public static Connection getConnection() throws SQLException {
+    public Connection getConnection() throws SQLException {
         if (connection == null || connection.isClosed()) {
             try {
                 if (url == null || user == null || password == null) {
@@ -53,7 +53,7 @@ public class DatabaseManager {
     }
 
     // Close the database connection
-    public static void disconnect() {
+    public void disconnect() {
         if (connection != null) {
             try {
                 connection.close();
