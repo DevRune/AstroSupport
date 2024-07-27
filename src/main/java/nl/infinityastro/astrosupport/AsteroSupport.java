@@ -8,6 +8,9 @@ import nl.infinityastro.astrosupport.listeners.MenuClickListener;
 import nl.infinityastro.astrosupport.utils.MenuUtils;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 public class AsteroSupport extends JavaPlugin {
@@ -24,6 +27,7 @@ public class AsteroSupport extends JavaPlugin {
         String password = getConfig().getString("database.password");
         String type = getConfig().getString("database.type");
         DatabaseManager.configureDatabase(url, user, password, type);
+        initializeDatabase();
 
         // Set database manager for utility classes
         MenuUtils.setDatabaseManager(databaseManager);
@@ -37,6 +41,34 @@ public class AsteroSupport extends JavaPlugin {
         getCommand("ask").setExecutor(new AskCommand());
         getCommand("report").setExecutor(new ReportCommand());
         getCommand("support").setExecutor(new SupportCommand());
+    }
+
+    public static void initializeDatabase() {
+        String createAskTable = "CREATE TABLE IF NOT EXISTS Ask (" +
+                "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                "server VARCHAR(255), " +
+                "description TEXT, " +
+                "status VARCHAR(50) DEFAULT 'open', " +
+                "claimed_by VARCHAR(255), " +
+                "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+                ");";
+
+        String createReportTable = "CREATE TABLE IF NOT EXISTS Report (" +
+                "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                "server VARCHAR(255), " +
+                "description TEXT, " +
+                "status VARCHAR(50) DEFAULT 'open', " +
+                "claimed_by VARCHAR(255), " +
+                "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+                ");";
+
+        try (Connection conn = DatabaseManager.getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(createAskTable);
+            stmt.execute(createReportTable);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
