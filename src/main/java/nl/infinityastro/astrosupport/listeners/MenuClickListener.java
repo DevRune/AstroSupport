@@ -1,5 +1,7 @@
 package nl.infinityastro.astrosupport.listeners;
 
+import nl.infinityastro.astrosupport.database.Ask;
+import nl.infinityastro.astrosupport.database.Report;
 import nl.infinityastro.astrosupport.utils.MenuUtils;
 import nl.infinityastro.astrosupport.utils.MessageUtils;
 import org.bukkit.event.EventHandler;
@@ -16,6 +18,7 @@ import java.util.UUID;
 public class MenuClickListener implements Listener {
 
     HashMap<UUID, String> playerTypeMap = new HashMap<>();
+    private HashMap<UUID, Integer> playerIdMap = new HashMap<>();
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
@@ -74,16 +77,8 @@ public class MenuClickListener implements Listener {
     private void handleAskReportMenu(Player player, String title, String itemName) {
         try {
             int id = Integer.parseInt(itemName.split(" ")[2]);
-            if (itemName.contains("Claim")) {
-                MenuUtils.claimItem(player, title.equalsIgnoreCase("Ask Menu") ? "ask" : "report", id);
-            } else if (itemName.contains("Close")) {
-                MenuUtils.closeItem(player, title.equalsIgnoreCase("Ask Menu") ? "ask" : "report", id);
-            } else if (itemName.contains("Back")) {
-                String type = playerTypeMap.get(player.getUniqueId());
-                MenuUtils.openServerMenu(player, type);
-            } else {
-                MenuUtils.openItemDetails(player, title.equalsIgnoreCase("Ask Menu") ? "ask" : "report", id);
-            }
+            playerIdMap.put(player.getUniqueId(), id);
+            MenuUtils.openItemDetails(player, title.equalsIgnoreCase("Ask Menu") ? "ask" : "report", id);
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
@@ -91,14 +86,38 @@ public class MenuClickListener implements Listener {
 
     private void handleAskReportDetailsMenu(Player player, String title, String itemName) {
         try {
-            int id = Integer.parseInt(itemName.split(" ")[2]);
-            if (itemName.contains("Claim")) {
-                MenuUtils.claimItem(player, title.equalsIgnoreCase("Ask Details") ? "ask" : "report", id);
-            } else if (itemName.contains("Close")) {
-                MenuUtils.closeItem(player, title.equalsIgnoreCase("Ask Details") ? "ask" : "report", id);
-            } else if (itemName.contains("Back")) {
-                String previousMenu = title.equalsIgnoreCase("Ask Details") ? "Ask Menu" : "Report Menu";
-                MenuUtils.openItemMenu(player, previousMenu.equals("Ask Menu") ? "ask" : "report", "server"); // Adjust server parameter as needed
+            int id = playerIdMap.get(player.getUniqueId());
+            if (title.equalsIgnoreCase(MessageUtils.colorize("&6Ask Details"))) {
+                // Handle Ask details menu interactions
+                switch (itemName) {
+                    case "&aClaim":
+                        player.sendMessage(MessageUtils.colorize("&aYou have claimed this Ask!"));
+                        Ask.claimAsk(id, player.getUniqueId());
+                        break;
+                    case "&cClose":
+                        player.sendMessage(MessageUtils.colorize("&cYou have closed this Ask!"));
+                        Ask.closeAsk(id);
+                        break;
+                    case "&cBack":
+                        MenuUtils.openServerMenu(player, "Ask");
+                        break;
+                    default:
+                }
+            } else if (title.equalsIgnoreCase(MessageUtils.colorize("&6Report Details"))) {
+                // Handle Report details menu interactions
+                switch (itemName) {
+                    case "&aClaim":
+                        player.sendMessage(MessageUtils.colorize("&aYou have claimed this Report!"));
+                        Report.claimReport(id, player.getUniqueId());
+                        break;
+                    case "&cClose":
+                        player.sendMessage(MessageUtils.colorize("&cYou have closed this Report!"));
+                        Report.closeReport(id);
+                        break;
+                    case "&cBack":
+                        MenuUtils.openServerMenu(player, "Report");
+                        break;
+                }
             }
         } catch (NumberFormatException e) {
             e.printStackTrace();

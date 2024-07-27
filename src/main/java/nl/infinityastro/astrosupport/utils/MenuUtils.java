@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.sql.*;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -124,7 +125,7 @@ public class MenuUtils {
     }
 
     public static void openItemDetails(Player player, String type, int id) {
-        Inventory inv = Bukkit.createInventory(null, 3*9, MessageUtils.colorize("&6" + type + " Details (" + id + ")"));
+        Inventory inv = Bukkit.createInventory(null, 3 * 9, MessageUtils.colorize("&6" + type + " Details"));
 
         try (Connection conn = databaseManager.getConnection()) {
             String query = "SELECT * FROM " + getDatabaseFromType(type) + " WHERE id = ?";
@@ -133,7 +134,6 @@ public class MenuUtils {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-
                 // Define the 'Claim' and 'Close' buttons
                 ItemStack claimButton = new ItemStack(Material.GREEN_CONCRETE);
                 ItemMeta claimMeta = claimButton.getItemMeta();
@@ -149,16 +149,36 @@ public class MenuUtils {
                     closeButton.setItemMeta(closeMeta);
                 }
 
-// Add Claim and Close buttons to the menu
+                // Add Claim and Close buttons to the menu (twice)
                 inv.setItem(24, claimButton); // Slot 24 for Claim button
                 inv.setItem(26, closeButton); // Slot 26 for Close button
 
-                if(type.equalsIgnoreCase("ask")) {
+                // Add ID to the menu
+                ItemStack idItem = new ItemStack(Material.PAPER);
+                ItemMeta idMeta = idItem.getItemMeta();
+                if (idMeta != null) {
+                    idMeta.setDisplayName(MessageUtils.colorize("&eID"));
+                    idMeta.setLore(Collections.singletonList(MessageUtils.colorize("&7" + id)));
+                    idItem.setItemMeta(idMeta);
+                }
+                inv.setItem(0, idItem); // Slot 0 for ID
+
+                // Status information tab
+                String status = rs.getString("status");
+                ItemStack statusItem = new ItemStack(Material.BOOK);
+                ItemMeta statusMeta = statusItem.getItemMeta();
+                if (statusMeta != null) {
+                    statusMeta.setDisplayName(MessageUtils.colorize("&eStatus"));
+                    statusMeta.setLore(Collections.singletonList(MessageUtils.colorize("&7" + status)));
+                    statusItem.setItemMeta(statusMeta);
+                }
+                inv.setItem(1, statusItem); // Slot 1 for Status
+
+                if (type.equalsIgnoreCase("ask")) {
                     // Add "Ask" type items to the menu
                     String playerName = rs.getString("player_name");
                     String question = rs.getString("question");
                     String server = rs.getString("server");
-                    String status = rs.getString("status");
                     String claimedBy = rs.getString("claimed_by");
                     Timestamp createdAt = rs.getTimestamp("created_at");
 
@@ -194,18 +214,21 @@ public class MenuUtils {
                     inv.setItem(14, serverItem); // Slot 14 for server
                 }
 
-                if(type.equalsIgnoreCase("report")) {
+                if (type.equalsIgnoreCase("report")) {
                     // Add "Report" type items to the menu
-                    String reporter = rs.getString("reporter");
-                    String targetPlayer = rs.getString("target_player");
+                    String reporterUUID = rs.getString("reporter");
+                    String targetPlayerUUID = rs.getString("target_player");
                     String reason = rs.getString("reason");
                     String server = rs.getString("server");
-                    String status = rs.getString("status");
                     String claimedBy = rs.getString("claimed_by");
                     Timestamp createdAt = rs.getTimestamp("created_at");
 
+                    // Convert UUIDs to player names
+                    String reporterName = Bukkit.getOfflinePlayer(UUID.fromString(reporterUUID)).getName();
+                    String targetPlayerName = Bukkit.getOfflinePlayer(UUID.fromString(targetPlayerUUID)).getName();
+
                     // Example: Add reason item
-                    ItemStack reasonItem = new ItemStack(Material.WRITTEN_BOOK);
+                    ItemStack reasonItem = new ItemStack(Material.WRITABLE_BOOK);
                     ItemMeta reasonMeta = reasonItem.getItemMeta();
                     if (reasonMeta != null) {
                         reasonMeta.setDisplayName(MessageUtils.colorize("&eReason"));
@@ -220,7 +243,7 @@ public class MenuUtils {
                     ItemMeta reporterMeta = reporterItem.getItemMeta();
                     if (reporterMeta != null) {
                         reporterMeta.setDisplayName(MessageUtils.colorize("&eReporter"));
-                        reporterMeta.setLore(Collections.singletonList(MessageUtils.colorize("&7" + reporter)));
+                        reporterMeta.setLore(Collections.singletonList(MessageUtils.colorize("&7" + reporterName)));
                         reporterItem.setItemMeta(reporterMeta);
                     }
                     inv.setItem(12, reporterItem); // Slot 12 for reporter
@@ -230,7 +253,7 @@ public class MenuUtils {
                     ItemMeta targetPlayerMeta = targetPlayerItem.getItemMeta();
                     if (targetPlayerMeta != null) {
                         targetPlayerMeta.setDisplayName(MessageUtils.colorize("&eTarget Player"));
-                        targetPlayerMeta.setLore(Collections.singletonList(MessageUtils.colorize("&7" + targetPlayer)));
+                        targetPlayerMeta.setLore(Collections.singletonList(MessageUtils.colorize("&7" + targetPlayerName)));
                         targetPlayerItem.setItemMeta(targetPlayerMeta);
                     }
                     inv.setItem(14, targetPlayerItem); // Slot 14 for target player
@@ -239,22 +262,6 @@ public class MenuUtils {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        ItemStack claimButton = new ItemStack(Material.GREEN_CONCRETE);
-        ItemMeta claimMeta = claimButton.getItemMeta();
-        if (claimMeta != null) {
-            claimMeta.setDisplayName(MessageUtils.colorize("&aClaim"));
-            claimButton.setItemMeta(claimMeta);
-        }
-        inv.addItem(claimButton);
-
-        ItemStack closeButton = new ItemStack(Material.RED_CONCRETE);
-        ItemMeta closeMeta = closeButton.getItemMeta();
-        if (closeMeta != null) {
-            closeMeta.setDisplayName(MessageUtils.colorize("&cClose"));
-            closeButton.setItemMeta(closeMeta);
-        }
-        inv.addItem(closeButton);
 
         ItemStack backButton = new ItemStack(Material.BARRIER);
         ItemMeta backMeta = backButton.getItemMeta();
@@ -266,6 +273,9 @@ public class MenuUtils {
 
         player.openInventory(inv);
     }
+
+
+
 
     public static void submitAsk(Player player, String question) {
         Ask.submitAsk(player.getName(), question);
