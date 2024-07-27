@@ -87,34 +87,38 @@ public class MenuClickListener implements Listener {
     private void handleAskReportDetailsMenu(Player player, String title, String itemName) {
         try {
             int id = playerIdMap.get(player.getUniqueId());
-            if (title.equalsIgnoreCase(MessageUtils.colorize("&6Ask Details"))) {
+            if (title.equalsIgnoreCase("Ask Details")) {
                 // Handle Ask details menu interactions
-                switch (itemName) {
-                    case "&aClaim":
+                switch (itemName.toLowerCase()) {
+                    case "claim":
                         player.sendMessage(MessageUtils.colorize("&aYou have claimed this Ask!"));
                         Ask.claimAsk(id, player.getUniqueId());
+                        player.closeInventory();
                         break;
-                    case "&cClose":
+                    case "close":
                         player.sendMessage(MessageUtils.colorize("&cYou have closed this Ask!"));
                         Ask.closeAsk(id);
+                        player.closeInventory();
                         break;
-                    case "&cBack":
+                    case "back":
                         MenuUtils.openServerMenu(player, "Ask");
                         break;
                     default:
                 }
-            } else if (title.equalsIgnoreCase(MessageUtils.colorize("&6Report Details"))) {
+            } else if (title.equalsIgnoreCase("Report Details")) {
                 // Handle Report details menu interactions
-                switch (itemName) {
-                    case "&aClaim":
+                switch (itemName.toLowerCase()) {
+                    case "claim":
                         player.sendMessage(MessageUtils.colorize("&aYou have claimed this Report!"));
                         Report.claimReport(id, player.getUniqueId());
+                        player.closeInventory();
                         break;
-                    case "&cClose":
+                    case "close":
                         player.sendMessage(MessageUtils.colorize("&cYou have closed this Report!"));
                         Report.closeReport(id);
+                        player.closeInventory();
                         break;
-                    case "&cBack":
+                    case "back":
                         MenuUtils.openServerMenu(player, "Report");
                         break;
                 }
