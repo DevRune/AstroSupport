@@ -6,12 +6,15 @@ commands:
   ask:
     description: Submit an ask request
     usage: /ask <question>
+    permission: astrosupport.use
   report:
     description: Submit a report
     usage: /report <player> <reason>
+    permission: astrosupport.use
   support:
     description: Staff support commands
-    usage: /support <subcommand>
+    usage: /support
+    permission: astrosupport.staff
 permissions:
   astrosupport.use:
     description: Allows the use of /ask and /report

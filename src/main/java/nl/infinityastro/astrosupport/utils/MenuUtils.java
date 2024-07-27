@@ -59,12 +59,14 @@ public class MenuUtils {
         Inventory inv = Bukkit.createInventory(null, 27, MessageUtils.colorize("&6Server Menu"));
 
         for (int i = 0; i < serverNames.size(); i++) {
-            ItemStack item = new ItemStack(Material.PAPER);
-            ItemMeta meta = item.getItemMeta();
-            if (meta != null) {
-                meta.setDisplayName(MessageUtils.colorize("&6" + serverNames.get(i)));
-                item.setItemMeta(meta);
-                inv.setItem(i, item);
+            if(player.hasPermission("astrosupport.staff.global") || player.hasPermission("astrosupport.staff." + serverNames.get(i))){
+                ItemStack item = new ItemStack(Material.PAPER);
+                ItemMeta meta = item.getItemMeta();
+                if (meta != null) {
+                    meta.setDisplayName(MessageUtils.colorize("&6" + serverNames.get(i)));
+                    item.setItemMeta(meta);
+                    inv.setItem(i, item);
+                }
             }
         }
 
