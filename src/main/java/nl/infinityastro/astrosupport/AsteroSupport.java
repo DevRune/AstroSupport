@@ -47,19 +47,22 @@ public class AsteroSupport extends JavaPlugin {
     public void initializeDatabase() {
         String createAskTable = "CREATE TABLE IF NOT EXISTS asks (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                "player_name VARCHAR(64), " +
+                "question TEXT, " +
                 "server VARCHAR(255), " +
-                "description TEXT, " +
                 "status VARCHAR(50) DEFAULT 'open', " +
-                "claimed_by VARCHAR(255), " +
+                "claimed_by VARCHAR(36), " +
                 "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
                 ");";
 
         String createReportTable = "CREATE TABLE IF NOT EXISTS reports (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                "reporter VARCHAR(36), " +
+                "target_player VARCHAR(36), " +
+                "reason TEXT, " +
                 "server VARCHAR(255), " +
-                "description TEXT, " +
                 "status VARCHAR(50) DEFAULT 'open', " +
-                "claimed_by VARCHAR(255), " +
+                "claimed_by VARCHAR(36), " +
                 "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
                 ");";
 

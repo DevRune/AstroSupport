@@ -5,6 +5,7 @@ import nl.infinityastro.astrosupport.AsteroSupport;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.UUID;
 
 public class Ask {
 
@@ -23,11 +24,11 @@ public class Ask {
         }
     }
 
-    public static void claimAsk(int id, String staffName) {
+    public static void claimAsk(int id, UUID staff) {
         try (Connection conn = plugin.getDatabaseManager().getConnection()) {
             String query = "UPDATE asks SET claimed_by = ?, status = 'claimed' WHERE id = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setString(1, staffName);
+            stmt.setString(1, staff.toString());
             stmt.setInt(2, id);
             stmt.executeUpdate();
         } catch (SQLException e) {

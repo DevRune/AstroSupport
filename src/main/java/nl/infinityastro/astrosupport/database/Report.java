@@ -5,17 +5,18 @@ import nl.infinityastro.astrosupport.AsteroSupport;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.UUID;
 
 public class Report {
 
     static AsteroSupport plugin = AsteroSupport.getPlugin(AsteroSupport.class);
 
-    public static void submitReport(String reporter, String targetPlayer, String reason) {
+    public static void submitReport(UUID reporter, UUID targetPlayer, String reason) {
         try (Connection conn = plugin.getDatabaseManager().getConnection()) {
             String query = "INSERT INTO reports (reporter, target_player, reason, status, server) VALUES (?, ?, ?, 'open', ?)";
             PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setString(1, reporter);
-            stmt.setString(2, targetPlayer);
+            stmt.setString(1, reporter.toString());
+            stmt.setString(2, targetPlayer.toString());
             stmt.setString(3, reason);
             stmt.setString(4, AsteroSupport.getPlugin(AsteroSupport.class).getConfig().getString("server.name"));
             stmt.executeUpdate();
@@ -24,11 +25,11 @@ public class Report {
         }
     }
 
-    public static void claimReport(int id, String staffName) {
+    public static void claimReport(int id, UUID staff) {
         try (Connection conn = plugin.getDatabaseManager().getConnection()) {
             String query = "UPDATE reports SET claimed_by = ?, status = 'claimed' WHERE id = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setString(1, staffName);
+            stmt.setString(1, staff.toString());
             stmt.setInt(2, id);
             stmt.executeUpdate();
         } catch (SQLException e) {
