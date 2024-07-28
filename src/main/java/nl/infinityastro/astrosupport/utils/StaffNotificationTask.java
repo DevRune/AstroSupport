@@ -69,8 +69,12 @@ public class StaffNotificationTask extends BukkitRunnable {
                     }
 
                     // Send message to staff member
-                    player.sendMessage(MessageUtils.colorize("&6There are currently &c" + openAsks + " &6open questions and &c" + openReports + " &6open reports."));
-                    player.sendMessage(MessageUtils.colorize("&6You have claimed &c" + claimedAsks + " &6questions and &c" + claimedReports + " &6reports."));
+                    if(openAsks != 0 || openReports != 0) {
+                        player.sendMessage(MessageUtils.colorize("&6There are currently &c" + openAsks + " &6open questions and &c" + openReports + " &6open reports."));
+                    }
+                    if(claimedAsks != 0 || claimedReports != 0) {
+                        player.sendMessage(MessageUtils.colorize("&6You have claimed &c" + claimedAsks + " &6questions and &c" + claimedReports + " &6reports."));
+                    }
                 }
             }
         } catch (SQLException e) {
