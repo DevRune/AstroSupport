@@ -36,6 +36,17 @@ public class Ask {
         }
     }
 
+    public static void unclaimAsk(int id) {
+        try (Connection conn = plugin.getDatabaseManager().getConnection()) {
+            String query = "UPDATE asks SET claimed_by = NULL, status = 'open' WHERE id = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void closeAsk(int id) {
         try (Connection conn = plugin.getDatabaseManager().getConnection()) {
             String query = "UPDATE asks SET status = 'closed' WHERE id = ?";

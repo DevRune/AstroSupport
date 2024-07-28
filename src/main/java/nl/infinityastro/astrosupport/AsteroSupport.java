@@ -6,6 +6,7 @@ import nl.infinityastro.astrosupport.commands.SupportCommand;
 import nl.infinityastro.astrosupport.database.DatabaseManager;
 import nl.infinityastro.astrosupport.listeners.MenuClickListener;
 import nl.infinityastro.astrosupport.utils.MenuUtils;
+import nl.infinityastro.astrosupport.utils.StaffNotificationTask;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.Connection;
@@ -17,6 +18,7 @@ public class AsteroSupport extends JavaPlugin {
 
     private List<String> serverNames;
     private DatabaseManager databaseManager;
+    private StaffNotificationTask staffNotificationTask;
 
     @Override
     public void onEnable() {
@@ -32,6 +34,10 @@ public class AsteroSupport extends JavaPlugin {
 
         // Set database manager for utility classes
         MenuUtils.setDatabaseManager(databaseManager);
+
+        //start staffNotificationTask
+        staffNotificationTask = new StaffNotificationTask(databaseManager);
+        staffNotificationTask.runTaskTimer(this, 20L * 60 * 5, 20L * 60 * 5);
 
         // Load server names from the configuration
         serverNames = getConfig().getStringList("server.menu.items");
@@ -78,6 +84,8 @@ public class AsteroSupport extends JavaPlugin {
     @Override
     public void onDisable() {
         // Clean up resources if needed
+        staffNotificationTask.cancel();
+        databaseManager.disconnect();
     }
 
     public DatabaseManager getDatabaseManager() {

@@ -144,6 +144,13 @@ public class MenuUtils {
                     claimButton.setItemMeta(claimMeta);
                 }
 
+                ItemStack unclaimButton = new ItemStack(Material.ORANGE_CONCRETE);
+                ItemMeta unclaimMeta = unclaimButton.getItemMeta();
+                if (unclaimMeta != null) {
+                    unclaimMeta.setDisplayName(MessageUtils.colorize("&6Unclaim"));
+                    unclaimButton.setItemMeta(claimMeta);
+                }
+
                 ItemStack closeButton = new ItemStack(Material.RED_CONCRETE);
                 ItemMeta closeMeta = closeButton.getItemMeta();
                 if (closeMeta != null) {
@@ -153,6 +160,7 @@ public class MenuUtils {
 
                 // Add Claim and Close buttons to the menu (twice)
                 inv.setItem(24, claimButton); // Slot 24 for Claim button
+                inv.setItem(25, unclaimButton); // Slot 24 for Claim button
                 inv.setItem(26, closeButton); // Slot 26 for Close button
 
                 // Add ID to the menu

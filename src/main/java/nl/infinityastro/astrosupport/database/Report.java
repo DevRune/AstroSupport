@@ -37,6 +37,17 @@ public class Report {
         }
     }
 
+    public static void unclaimReport(int id) {
+        try (Connection conn = plugin.getDatabaseManager().getConnection()) {
+            String query = "UPDATE reports SET claimed_by = NULL, status = 'open' WHERE id = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void closeReport(int id) {
         try (Connection conn = plugin.getDatabaseManager().getConnection()) {
             String query = "UPDATE reports SET status = 'closed' WHERE id = ?";

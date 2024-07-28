@@ -91,12 +91,17 @@ public class MenuClickListener implements Listener {
                 // Handle Ask details menu interactions
                 switch (itemName.toLowerCase()) {
                     case "claim":
-                        player.sendMessage(MessageUtils.colorize("&aYou have claimed this Ask!"));
+                        player.sendMessage(MessageUtils.colorize("&aYou have claimed this question!"));
                         Ask.claimAsk(id, player.getUniqueId());
                         player.closeInventory();
                         break;
+                    case "unclaim":
+                        player.sendMessage(MessageUtils.colorize("&aYou have unclaimed this question!"));
+                        Ask.unclaimAsk(id);
+                        player.closeInventory();
+                        break;
                     case "close":
-                        player.sendMessage(MessageUtils.colorize("&cYou have closed this Ask!"));
+                        player.sendMessage(MessageUtils.colorize("&cYou have closed this question!"));
                         Ask.closeAsk(id);
                         player.closeInventory();
                         break;
@@ -109,12 +114,17 @@ public class MenuClickListener implements Listener {
                 // Handle Report details menu interactions
                 switch (itemName.toLowerCase()) {
                     case "claim":
-                        player.sendMessage(MessageUtils.colorize("&aYou have claimed this Report!"));
+                        player.sendMessage(MessageUtils.colorize("&aYou have claimed this report!"));
                         Report.claimReport(id, player.getUniqueId());
                         player.closeInventory();
                         break;
+                    case "unclaim":
+                        player.sendMessage(MessageUtils.colorize("&aYou have unclaimed this report!"));
+                        Report.unclaimReport(id);
+                        player.closeInventory();
+                        break;
                     case "close":
-                        player.sendMessage(MessageUtils.colorize("&cYou have closed this Report!"));
+                        player.sendMessage(MessageUtils.colorize("&cYou have closed this report!"));
                         Report.closeReport(id);
                         player.closeInventory();
                         break;
